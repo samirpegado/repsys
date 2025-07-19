@@ -1,0 +1,169 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:repsys/app_state/app_state.dart';
+import 'package:repsys/data/repositories/auth_repository.dart';
+import 'package:repsys/data/repositories/endereco_repository.dart';
+import 'package:repsys/data/services/auth_service.dart';
+import 'package:repsys/ui/auth/view_models/change_password_viewmodel.dart';
+import 'package:repsys/ui/auth/view_models/loading_viewmodel.dart';
+import 'package:repsys/ui/auth/view_models/login_viewmodel.dart';
+import 'package:repsys/ui/auth/view_models/new_password_viewmodel.dart';
+import 'package:repsys/ui/auth/view_models/recovery_viewmodel.dart';
+import 'package:repsys/ui/auth/view_models/signup_viewmodel.dart';
+import 'package:repsys/ui/auth/view_models/verify_viewmodel.dart';
+import 'package:repsys/ui/auth/widgets/change_password.dart';
+import 'package:repsys/ui/auth/widgets/loading.dart';
+import 'package:repsys/ui/auth/widgets/login.dart';
+import 'package:repsys/ui/auth/widgets/new_password.dart';
+import 'package:repsys/ui/auth/widgets/policy.dart';
+import 'package:repsys/ui/auth/widgets/recovery.dart';
+import 'package:repsys/ui/auth/widgets/signup.dart';
+import 'package:repsys/ui/auth/widgets/verify.dart';
+import 'package:repsys/ui/home/view_models/home_viewmodel.dart';
+import 'package:repsys/ui/home/widgets/home.dart';
+import 'package:provider/provider.dart';
+
+GoRouter router(AuthRepository authRepository, AppState appState) => GoRouter(
+        initialLocation: '/login',
+        refreshListenable: authRepository,
+        routes: [
+          GoRoute(
+            path: '/login',
+            pageBuilder: (context, state) {
+              final viewModel = LoginViewModel(authRepository: context.read());
+              return buildPageWithTransition(
+                state: state,
+                child: Login(viewModel: viewModel),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/home',
+            redirect: (context, state) async {
+              if (!await isLoggedIn(authRepository)) return '/login';
+              return null;
+            },
+            pageBuilder: (context, state) {
+              final viewModel = HomeViewmodel();
+              return buildPageWithTransition(
+                state: state,
+                child: Home(viewModel: viewModel),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/loading',
+            redirect: (context, state) async {
+              if (!await isLoggedIn(authRepository)) return '/login';
+              return null;
+            },
+            pageBuilder: (context, state) {
+              final viewModel = LoadingViewModel(appState: appState);
+              return buildPageWithTransition(
+                state: state,
+                child: Loading(viewModel: viewModel),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/signup',
+            pageBuilder: (context, state) {
+              final authService = AuthService();
+              final enderecoRepository = EnderecoRepository();
+              final viewModel = SignUpViewModel(
+                authService: authService,
+                appState: appState,
+                enderecoRepository: enderecoRepository,
+              );
+              return buildPageWithTransition(
+                state: state,
+                child: SignUp(viewModel: viewModel),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/change-password',
+            pageBuilder: (context, state) {
+              final authService = AuthService();
+              final viewModel =
+                  ChangePasswordViewModel(authService: authService);
+              return buildPageWithTransition(
+                state: state,
+                child: ChangePassword(viewModel: viewModel),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/verify',
+            redirect: (context, state) async {
+              if (!await isLoggedIn(authRepository)) return '/login';
+              return null;
+            },
+            pageBuilder: (context, state) {
+              final authService = AuthService();
+              final viewModel =
+                  VerifyViewModel(authService: authService, appState: appState);
+              return buildPageWithTransition(
+                state: state,
+                child: Verify(viewModel: viewModel),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/policy',
+            pageBuilder: (context, state) {
+              return buildPageWithTransition(
+                state: state,
+                child: Policy(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/recovery',
+            pageBuilder: (context, state) {
+              final authService = AuthService();
+              final viewModel = RecoveryViewModel(authService: authService);
+              return buildPageWithTransition(
+                state: state,
+                child: Recovery(
+                  viewModel: viewModel,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/new-password',
+            pageBuilder: (context, state) {
+              final authService = AuthService();
+              final email = state.uri.queryParameters['email'];
+              final viewModel = NewPasswordViewModel(authService: authService);
+              return buildPageWithTransition(
+                state: state,
+                child: NewPassword(
+                  viewModel: viewModel,
+                  email: email,
+                ),
+              );
+            },
+          ),
+        ]);
+
+CustomTransitionPage<T> buildPageWithTransition<T>({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: child,
+      );
+    },
+  );
+}
+
+Future<bool> isLoggedIn(AuthRepository authRepository) async {
+  return await authRepository.isAuthenticated;
+}
