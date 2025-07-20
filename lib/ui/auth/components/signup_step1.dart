@@ -1,4 +1,6 @@
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:repsys/app_state/app_state.dart';
@@ -88,7 +90,8 @@ class _SignupStep1State extends State<SignupStep1> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _celularController,
-            inputFormatters: [phoneFormatter],
+            inputFormatters: [  FilteringTextInputFormatter.digitsOnly,
+              TelefoneInputFormatter()],
             keyboardType: TextInputType.number,
             decoration: AppInputDecorations.normal(
               label: 'Celular',

@@ -24,7 +24,7 @@ class AppValidators {
    static String? Function(String?) celular({String label = 'Celular'}) {
     return ValidationBuilder(requiredMessage: 'Campo obrigatório!',)
         .required('Informe o $label')
-        .minLength(15, 'Número inválido')
+        .minLength(14, 'Número inválido')
         .build();
   }
 

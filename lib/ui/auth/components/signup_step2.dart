@@ -1,4 +1,6 @@
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:repsys/app_state/app_state.dart';
 import 'package:repsys/ui/auth/view_models/signup_viewmodel.dart';
@@ -60,10 +62,10 @@ class _SignupStep2State extends State<SignupStep2> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-          'Dados da empresa',
-          style: AppTheme.lightTheme.textTheme.headlineLarge,
-        ),
-        const SizedBox(height: 16),
+            'Dados da empresa',
+            style: AppTheme.lightTheme.textTheme.headlineLarge,
+          ),
+          const SizedBox(height: 16),
           TextFormField(
             controller: _nomeFantasiaController,
             textCapitalization: TextCapitalization.words,
@@ -104,7 +106,10 @@ class _SignupStep2State extends State<SignupStep2> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _telefoneController,
-            inputFormatters: [phoneFormatter],
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              TelefoneInputFormatter()
+            ],
             keyboardType: TextInputType.number,
             decoration: AppInputDecorations.normal(
               label: 'Telefone',

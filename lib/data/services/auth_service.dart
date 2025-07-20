@@ -224,6 +224,18 @@ class AuthService {
     required String cpf,
     required String celular,
     required String nome,
+    required String nomeFantasia,
+    String? razaoSocial,
+    String? cnpj,
+    String? emailEmpresa,
+    String? telefone,
+    String? website,
+    String? enderecoCep,
+    String? enderecoUf,
+    String? enderecoCidade,
+    String? enderecoRua,
+    String? enderecoNumero,
+    String? enderecoComplemento,
   }) async {
     final serverUrl = dotenv.env['SUPABASE_URL']!;
     final anonkey = dotenv.env['SUPABASE_ANON_KEY']!;
@@ -232,9 +244,7 @@ class AuthService {
       'Content-Type': 'application/json',
     };
 
-    final url = Uri.parse(
-      '$serverUrl/functions/v1/create-account',
-    );
+    final url = Uri.parse('$serverUrl/functions/v1/create-account');
 
     final body = json.encode({
       "nome": nome,
@@ -242,6 +252,18 @@ class AuthService {
       "password": password,
       "cpf": cpf,
       "celular": celular,
+      "nome_fantasia": nomeFantasia,
+      "razao_social": razaoSocial,
+      "cnpj": cnpj,
+      "email_empresa": emailEmpresa,
+      "telefone": telefone,
+      "website": website,
+      "endereco_cep": enderecoCep,
+      "endereco_uf": enderecoUf,
+      "endereco_cidade": enderecoCidade,
+      "endereco_rua": enderecoRua,
+      "endereco_numero": enderecoNumero,
+      "endereco_complemento": enderecoComplemento,
     });
 
     try {

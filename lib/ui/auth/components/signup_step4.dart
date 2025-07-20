@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:repsys/app_state/app_state.dart';
+import 'package:repsys/domain/models/response_model.dart';
 import 'package:repsys/ui/auth/view_models/signup_viewmodel.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/themes/dimens.dart';
 import 'package:repsys/ui/core/themes/theme.dart';
+import 'package:repsys/utils/result.dart';
 
 class SignupStep4 extends StatefulWidget {
   const SignupStep4({super.key, required this.viewModel});
@@ -55,21 +57,53 @@ Aproveite sua jornada no Repsys e descubra como podemos ajudá-lo a alcançar se
               ),
             )),
         const SizedBox(height: 32),
-        FilledButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(AppColors.success),
-              minimumSize: WidgetStateProperty.all(
-                const Size.fromHeight(60),
-              ),
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: Dimens.borderRadius,
+        AnimatedBuilder(
+          animation: widget.viewModel.criarContaCommand,
+          builder: (context, _) {
+            final cmd = widget.viewModel.criarContaCommand;
+
+            // Reagir ao resultado final
+            if (cmd.result != null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (cmd.result is Ok<ResponseModel>) {
+                  final result = (cmd.result as Ok<ResponseModel>).value;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(result.message)),
+                  );
+                  if (result.success) {
+                    appState.limparDadosRegistro();
+                    context.go('/home');
+                  }
+                } else if (cmd.result is Error) {
+                  final error = (cmd.result as Error).error;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(error.toString())),
+                  );
+                }
+                cmd.clearResult(); // limpa para não repetir
+              });
+            }
+
+            return FilledButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(AppColors.success),
+                minimumSize: WidgetStateProperty.all(
+                  const Size.fromHeight(60),
                 ),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: Dimens.borderRadius,
+                  ),
+                ),
+                elevation: WidgetStateProperty.all(2),
               ),
-              elevation: WidgetStateProperty.all(2),
-            ),
-            onPressed: () {},
-            child: const Text('Testar grátis')),
+              onPressed: cmd.running ? null : () => cmd.execute(),
+              child: cmd.running
+                  ? const CircularProgressIndicator(color: Colors.white,)
+                  : const Text('Testar grátis'),
+            );
+          },
+        ),
         const SizedBox(height: 16),
         OutlinedButton(
           onPressed: () => appState.backPageView(),

@@ -149,4 +149,9 @@ class AppState extends ChangeNotifier {
       ..complemento = complemento;
     notifyListeners();
   }
+
+  void limparDadosRegistro(){
+    pageViewIndex = 0;
+    _registerData = null;
+  }
 }

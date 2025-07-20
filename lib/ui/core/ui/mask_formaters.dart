@@ -6,6 +6,12 @@ var phoneFormatter = MaskTextInputFormatter(
   type: MaskAutoCompletionType.lazy
 );
 
+var telefoneFormatter = MaskTextInputFormatter(
+  mask: '(##) ####-####', 
+  filter: { "#": RegExp(r'[0-9]') },
+  type: MaskAutoCompletionType.lazy
+);
+
 var cpfFomatter = MaskTextInputFormatter(
   mask: '###.###.###-##', 
   filter: { "#": RegExp(r'[0-9]') },

@@ -170,7 +170,7 @@ class _SignupStep3State extends State<SignupStep3> {
                     label: 'Número',
                     icon: Icons.pin_outlined,
                   ),
-                  validator: AppValidators.numero(),
+                  validator: AppValidators.nome(),
                 ),
               ),
               const SizedBox(width: 16),

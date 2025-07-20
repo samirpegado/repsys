@@ -97,20 +97,22 @@ class _LoginState extends State<Login> {
                                   setState(() {
                                     check = !check;
                                   });
-                                }),SizedBox(width: 8),
-                                Text(
-                                  'Lembrar-me',
-                                  style: TextStyle(
-                                    color: AppColors.secondaryText,
-                                  ),
-                                ),
+                                }),
+                            SizedBox(width: 8),
+                            Text(
+                              'Lembrar-me',
+                              style: TextStyle(
+                                color: AppColors.secondaryText,
+                              ),
+                            ),
                           ],
                         ),
                         InkWell(
                           onTap: () => context.push('/recovery'),
                           child: Text(
                             'Esqueci minha senha',
-                            style: TextStyle(color: AppColors.warning,
+                            style: TextStyle(
+                                color: AppColors.warning,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -119,20 +121,22 @@ class _LoginState extends State<Login> {
                     SizedBox(height: 16),
                     InkWell(
                       onTap: () {
-                        context.push('/signup');
+                        context.go('/signup');
                       },
                       child: RichText(
                           text: TextSpan(
                         children: [
                           TextSpan(
                               text: 'Ainda não tem registro? ',
-                              style: TextStyle(color: AppColors.secondaryText, fontSize: 16)),
+                              style: TextStyle(
+                                  color: AppColors.secondaryText,
+                                  fontSize: 16)),
                           TextSpan(
                               text: 'Teste grátis',
                               style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.success,
-                                fontWeight: FontWeight.bold)),
+                                  fontSize: 16,
+                                  color: AppColors.success,
+                                  fontWeight: FontWeight.bold)),
                         ],
                       )),
                     ),
@@ -159,7 +163,7 @@ class _LoginState extends State<Login> {
                                   _emailController.text,
                                   _senhaController.text,
                                 );
-                              } 
+                              }
                               await widget.viewModel.login.execute((
                                 _emailController.text,
                                 _senhaController.text,

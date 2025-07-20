@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:repsys/data/repositories/supabase_auth_repository.dart';
 import 'package:repsys/ui/core/themes/theme.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,8 @@ void main() async {
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
+
+  setUrlStrategy(PathUrlStrategy());
 
   runApp(
     // Cria o MultiProvider para fornecer os repositórios e o estado da aplicação
