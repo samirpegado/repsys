@@ -15,6 +15,7 @@ class AppState extends ChangeNotifier {
 
   XFile? _profilePic;
   int pageViewIndex = 0;
+  int? menuIndex;
 
   UserModel? get usuario => _usuario;
   RegisterDataModel? get registerData => _registerData;
@@ -84,7 +85,11 @@ class AppState extends ChangeNotifier {
     pageViewIndex = i;
     notifyListeners();
   }
-
+ /// atualizar index do PageView
+  void setMenuIndex(int i) {
+    menuIndex = i;
+    notifyListeners();
+  }
   void backPageView() {
     if (pageViewIndex > 0) {
       pageViewIndex--;

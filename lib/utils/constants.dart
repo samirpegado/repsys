@@ -27,3 +27,6 @@ final List<String> estados = [
   'SE',
   'TO',
 ];
+
+
+final double desktopWidth = 1024.0;

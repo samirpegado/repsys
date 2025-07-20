@@ -22,7 +22,7 @@ class _LoadingState extends State<Loading> {
   }
 
   Future<void> _verificarUsuario() async {
-    await widget.viewModel
+    /*await widget.viewModel
         .init(); // carrega SharedPreferences, usuario e categorias
 
     if (!mounted) return;
@@ -33,7 +33,8 @@ class _LoadingState extends State<Loading> {
       context.go('/home');
     } else {
       context.go('/verify');
-    }
+    }*/
+    context.go('/');
   }
 
   @override

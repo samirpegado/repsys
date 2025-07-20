@@ -14,9 +14,7 @@ abstract class AppColors {
   static const grey2 = Color.fromARGB(255, 197, 197, 197);
   static const grey3 = Color.fromARGB(255, 216, 216, 216);
   static const alternate = Color(0xFFF6F6F6);
-  static const whiteTransparent = Color(
-    0x4DFFFFFF,
-  ); // Figma rgba(255, 255, 255, 0.3)
+  static const whiteTransparent = Color.fromARGB(10, 255, 255, 255); // Figma rgba(255, 255, 255, 0.3)
   static const blackTransparent = Color(0x4D000000);
 
   static const lightColorScheme = ColorScheme(

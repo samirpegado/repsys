@@ -19,12 +19,12 @@ import 'package:repsys/ui/auth/widgets/policy.dart';
 import 'package:repsys/ui/auth/widgets/recovery.dart';
 import 'package:repsys/ui/auth/widgets/signup.dart';
 import 'package:repsys/ui/auth/widgets/verify.dart';
-import 'package:repsys/ui/home/view_models/home_viewmodel.dart';
-import 'package:repsys/ui/home/widgets/home.dart';
+import 'package:repsys/ui/home/view_models/main_layout_viewmodel.dart';
+import 'package:repsys/ui/home/widgets/main_layout.dart';
 import 'package:provider/provider.dart';
 
 GoRouter router(AuthRepository authRepository, AppState appState) => GoRouter(
-        initialLocation: '/login',
+        initialLocation: '/loading',
         refreshListenable: authRepository,
         routes: [
           GoRoute(
@@ -38,16 +38,16 @@ GoRouter router(AuthRepository authRepository, AppState appState) => GoRouter(
             },
           ),
           GoRoute(
-            path: '/home',
+            path: '/',
             redirect: (context, state) async {
               if (!await isLoggedIn(authRepository)) return '/login';
               return null;
             },
             pageBuilder: (context, state) {
-              final viewModel = HomeViewmodel();
+              final viewModel = MainLayoutViewmodel();
               return buildPageWithTransition(
                 state: state,
-                child: Home(viewModel: viewModel),
+                child: MainLayout(viewModel: viewModel),
               );
             },
           ),
