@@ -1,22 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:repsys/ui/components/profile_menu.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/utils/constants.dart';
 
-
-class Topbar extends StatelessWidget {
+class Topbar extends StatefulWidget {
   const Topbar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<Topbar> createState() => _TopbarState();
+}
 
+class _TopbarState extends State<Topbar> {
+  OverlayEntry? _overlayEntry;
+
+  void _showProfileMenu(BuildContext context) {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          // Fecha ao clicar fora
+          GestureDetector(
+            onTap: _removeOverlay,
+            child: Container(
+              color: Colors.transparent,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+          // Menu flutuante no topo direito com padding
+          Positioned(
+            top: 70,
+            right: 16,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(8),
+              child: const ProfileMenu(),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth >= desktopWidth;
+
     return Material(
       elevation: 3,
       child: Container(
         width: double.infinity,
         height: 65,
-        decoration: BoxDecoration(),
+        decoration: const BoxDecoration(),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -34,40 +76,40 @@ class Topbar extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(''),
+              const Text(''),
               Row(
                 children: [
                   IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.help_outline_rounded,
-                        color: AppColors.secondaryText,
-                      )),
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
                   const SizedBox(width: 6),
                   IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.search_rounded,
-                        color: AppColors.secondaryText,
-                      )),
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.help_outline_rounded,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
                   const SizedBox(width: 6),
                   IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.notifications_rounded,
-                        color: AppColors.secondaryText,
-                      )),
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.notifications_rounded,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
                   const SizedBox(width: 6),
                   InkWell(
-                    onTap: () {
-    
-                    },
+                    onTap: () => _showProfileMenu(context),
                     child: Row(
                       children: [
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: const [
                             Text(
                               'Olá,',
                               style: TextStyle(
@@ -76,16 +118,20 @@ class Topbar extends StatelessWidget {
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
-                            Text('Samir Gomes',
-                                style: TextStyle(color: AppColors.secondaryText))
+                            Text(
+                              'Samir Gomes',
+                              style: TextStyle(color: AppColors.secondaryText),
+                            ),
                           ],
                         ),
                         const SizedBox(width: 6),
-                        Icon(Icons.arrow_drop_down,
-                            color: AppColors.secondaryText)
+                        const Icon(
+                          Icons.arrow_drop_down,
+                          color: AppColors.secondaryText,
+                        ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ],

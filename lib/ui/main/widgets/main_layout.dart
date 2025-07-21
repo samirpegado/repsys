@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:repsys/ui/catalogo/widgets/catalogo.dart';
 import 'package:repsys/ui/components/sidebar.dart';
 import 'package:repsys/ui/components/topbar.dart';
-import 'package:repsys/ui/home/view_models/main_layout_viewmodel.dart';
+import 'package:repsys/ui/main/view_models/main_layout_viewmodel.dart';
 import 'package:repsys/utils/constants.dart';
 
 class MainLayout extends StatefulWidget {
@@ -27,8 +28,8 @@ class _MainLayoutState extends State<MainLayout> {
             child: Column(
               children: [
                 const Topbar(),
-                const Expanded(
-                  child: Center(child: Text('Welcome to MainLayout!')),
+                Expanded(
+                  child: Catalogo(),
                 ),
               ],
             ),

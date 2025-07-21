@@ -11,7 +11,8 @@ class AppInputDecorations {
     return InputDecoration(
       hintText: label,
       labelText: label,
-      labelStyle: const TextStyle(color: AppColors.primaryText),
+      labelStyle: const TextStyle(color: AppColors.primaryText, fontSize: 14),
+      hintStyle: const TextStyle(color: AppColors.secondaryText, fontSize: 14),
       suffixIcon: suffix ?? (icon != null ? Icon(icon) : null),
       suffixIconColor: AppColors.grey3,
       errorStyle: const TextStyle(color: AppColors.error),
@@ -43,8 +44,9 @@ class AppInputDecorations {
     return InputDecoration(
       hintText: label,
       labelText: label,
-      labelStyle: const TextStyle(color: AppColors.primaryText),
-      suffixIconColor: AppColors.grey3,
+      labelStyle: const TextStyle(color: AppColors.primaryText, fontSize: 14),
+      hintStyle: const TextStyle(color: AppColors.secondaryText, fontSize: 14),
+
       suffixIcon: InkWell(
         onTap: onToggleVisibility,
         child: Icon(

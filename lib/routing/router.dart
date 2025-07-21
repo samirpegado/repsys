@@ -19,8 +19,8 @@ import 'package:repsys/ui/auth/widgets/policy.dart';
 import 'package:repsys/ui/auth/widgets/recovery.dart';
 import 'package:repsys/ui/auth/widgets/signup.dart';
 import 'package:repsys/ui/auth/widgets/verify.dart';
-import 'package:repsys/ui/home/view_models/main_layout_viewmodel.dart';
-import 'package:repsys/ui/home/widgets/main_layout.dart';
+import 'package:repsys/ui/main/view_models/main_layout_viewmodel.dart';
+import 'package:repsys/ui/main/widgets/main_layout.dart';
 import 'package:provider/provider.dart';
 
 GoRouter router(AuthRepository authRepository, AppState appState) => GoRouter(

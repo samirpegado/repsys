@@ -5,7 +5,7 @@ abstract class AppColors {
   static const secondary = Color(0xFFFFFFFF);
   static const primaryText = Color(0xFF111827);
   static const secondaryText = Color(0xFF6B7280);
-  static const borderColor = Color(0xFF9F9FA3);
+  static const borderColor = Color(0xFFd0d5dd);
   static const error = Color(0xFFE74C3C);
   static const warning = Color(0xFFA57500);
   static const success = Color(0xFF249689);
