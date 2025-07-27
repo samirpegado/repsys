@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:repsys/ui/catalogo/components/novo_item.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/ui/input_decorations.dart';
 
@@ -17,6 +18,7 @@ class _CatalogoState extends State<Catalogo> {
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
+          /// Header com título, filtros e botão de adicionar
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -63,10 +65,19 @@ class _CatalogoState extends State<Catalogo> {
                   elevation: 2,
                   borderRadius: BorderRadius.circular(8.0),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+               
+                        child: NovoItem(),
+                      ),
+                      );
+                    },
                     style: ButtonStyle(
                       minimumSize: WidgetStatePropertyAll(Size(0, 50)),
-                      backgroundColor: WidgetStatePropertyAll(AppColors.primary),
+                      backgroundColor:
+                          WidgetStatePropertyAll(AppColors.primary),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
@@ -86,7 +97,7 @@ class _CatalogoState extends State<Catalogo> {
                 ),
               ])
             ],
-          )
+          ),
         ],
       ),
     );

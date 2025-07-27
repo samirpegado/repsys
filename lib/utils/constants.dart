@@ -28,5 +28,13 @@ final List<String> estados = [
   'TO',
 ];
 
+final List<String> tipoCatalogo = [
+  'Produto',
+  'Serviço',
+  'Peça',
+  'Equipamento',
+  'Acessório',
+];
+
 
 final double desktopWidth = 1024.0;
