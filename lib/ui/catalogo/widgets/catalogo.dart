@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:repsys/ui/catalogo/components/novo_item.dart';
+import 'package:repsys/ui/catalogo/view_models/catalogo_viewmodel.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/ui/input_decorations.dart';
 
@@ -67,11 +69,12 @@ class _CatalogoState extends State<Catalogo> {
                   child: TextButton(
                     onPressed: () async {
                       await showDialog(
-                      context: context,
-                      builder: (context) => Dialog(
-               
-                        child: NovoItem(),
-                      ),
+                        context: context,
+                        builder: (_) => ChangeNotifierProvider(
+                          create: (_) =>
+                              CatalogoViewModel(), // já instancia com o repo dentro
+                          child: const NovoItem(),
+                        ),
                       );
                     },
                     style: ButtonStyle(

@@ -18,23 +18,11 @@ class _LoadingState extends State<Loading> {
   @override
   void initState() {
     super.initState();
-    _verificarUsuario();
+    _boot();
   }
 
-  Future<void> _verificarUsuario() async {
-    /*await widget.viewModel
-        .init(); // carrega SharedPreferences, usuario e categorias
-
-    if (!mounted) return;
-
-    final status = widget.viewModel.appState.usuario?.status ?? false;
-
-    if (status) {
-      context.go('/home');
-    } else {
-      context.go('/verify');
-    }*/
-    context.go('/');
+  Future<void> _boot() async {
+    await widget.viewModel.initAndRoute(GoRouter.of(context));
   }
 
   @override

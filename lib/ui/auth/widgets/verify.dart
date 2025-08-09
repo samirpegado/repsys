@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
-import 'package:repsys/app_state/app_state.dart';
 import 'package:repsys/data/repositories/auth_repository.dart';
 import 'package:repsys/domain/models/response_model.dart';
-import 'package:repsys/domain/models/user_model.dart';
 import 'package:repsys/ui/auth/view_models/verify_viewmodel.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/themes/dimens.dart';
@@ -79,22 +77,23 @@ class _VerifyState extends State<Verify> {
     if (result is Ok<ResponseModel>) {
       final response = result.value;
       if (response.success) {
+      /*
         final appState = context.read<AppState>();
         final user = appState.usuario;
-
+      
         if (user != null) {
           final updatedUser = UserModel(
             id: user.id,
-            email: user.email,
+            email: user.email ?? '',
             nome: user.nome,
-            profilePic: user.profilePic,
+         
             celular: user.celular,
             cpf: user.cpf,
             status: true,
           );
           await appState.salvarUsuario(updatedUser);
         }
-
+      */
         if (mounted) context.go('/loading');
       } else {
         setState(() {

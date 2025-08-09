@@ -1,14 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:repsys/domain/models/despesa.dart';
 import 'package:repsys/domain/models/register_data_model.dart';
-import 'package:repsys/domain/models/user_model.dart';
+import 'package:repsys/domain/models/user_empresa_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
-  UserModel? _usuario;
   RegisterDataModel? _registerData;
   String? savedEmail;
   String? savedPassword;
@@ -16,21 +13,59 @@ class AppState extends ChangeNotifier {
   XFile? _profilePic;
   int pageViewIndex = 0;
   int? menuIndex;
-
-  UserModel? get usuario => _usuario;
   RegisterDataModel? get registerData => _registerData;
 
   XFile? get profilePic => _profilePic;
   DespesaModel? despesaSelecionada;
 
-  Future<void> salvarUsuario(UserModel usuario) async {
+  UserModel? _usuario;
+  EmpresaModel? _empresa;
+
+  UserModel? get usuario => _usuario;
+  EmpresaModel? get empresa => _empresa;
+
+  bool get isLoggedIn => _usuario != null;
+
+  /// Salva e atualiza estado
+  Future<void> salvarUsuarioEmpresa({
+    required UserModel usuario,
+    EmpresaModel? empresa,
+  }) async {
     _usuario = usuario;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('usuario', jsonEncode(usuario.toJson()));
+    _empresa = empresa;
+    await usuario.saveToPrefs();
+    if (empresa != null) {
+      await empresa.saveToPrefs();
+    } else {
+      await EmpresaModel.clearFromPrefs();
+    }
     notifyListeners();
   }
 
-   Future<void> saveLoginData(String email, String password) async {
+  /// Limpa tudo ao fazer logout/erro
+  Future<void> limparUsuarioEmpresa() async {
+    _usuario = null;
+    _empresa = null;
+    await UserModel.clearFromPrefs();
+    await EmpresaModel.clearFromPrefs();
+    notifyListeners();
+  }
+
+  /// Atualizações locais convenientes (ex.: editar perfil)
+  Future<void> atualizarUsuario({
+    String? nome,
+    String? celular,
+  }) async {
+    if (_usuario == null) return;
+    _usuario = _usuario!.copyWith(
+      nome: nome ?? _usuario!.nome,
+      celular: celular ?? _usuario!.celular,
+    );
+    await _usuario!.saveToPrefs();
+    notifyListeners();
+  }
+
+  Future<void> saveLoginData(String email, String password) async {
     savedEmail = email;
     savedPassword = password;
     final prefs = await SharedPreferences.getInstance();
@@ -39,42 +74,19 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> atualizarProfilePicUrl(String? novaUrl) async {
-    if (_usuario != null && novaUrl != null) {
-      _usuario = _usuario!.copyWith(profilePic: novaUrl);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('usuario', jsonEncode(_usuario!.toJson()));
-      notifyListeners();
-    }
-  }
-
-  Future<void> atualizarUsuario(
-      {required String nome, required String celular}) async {
-    if (_usuario == null) return;
-
-    _usuario = _usuario!.copyWith(
-      nome: nome,
-      celular: celular,
-    );
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('usuario', jsonEncode(_usuario!.toJson()));
-    notifyListeners();
-  }
-
   Future<void> carregar() async {
     final prefs = await SharedPreferences.getInstance();
-    final usuarioJson = prefs.getString('usuario');
+    // carrega o email e senha do shared preferences
     final getSavedEmail = prefs.getString('savedEmail');
-    final getSavedPassword = prefs.getString('savedPassword');  
+    final getSavedPassword = prefs.getString('savedPassword');
+
+    //carrega os dados da empresa e os dados do usuário do shared preferences
+    _usuario = await UserModel.loadFromPrefs();
+    _empresa = await EmpresaModel.loadFromPrefs();
 
     if (getSavedEmail != null && getSavedPassword != null) {
       savedEmail = getSavedEmail;
       savedPassword = getSavedPassword;
-    }
-
-    if (usuarioJson != null) {
-      _usuario = UserModel.fromJson(jsonDecode(usuarioJson));
     }
 
     notifyListeners();
@@ -85,11 +97,13 @@ class AppState extends ChangeNotifier {
     pageViewIndex = i;
     notifyListeners();
   }
- /// atualizar index do PageView
+
+  /// atualizar index do PageView
   void setMenuIndex(int i) {
     menuIndex = i;
     notifyListeners();
   }
+
   void backPageView() {
     if (pageViewIndex > 0) {
       pageViewIndex--;
@@ -155,7 +169,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void limparDadosRegistro(){
+  void limparDadosRegistro() {
     pageViewIndex = 0;
     _registerData = null;
   }
