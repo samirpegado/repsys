@@ -36,6 +36,35 @@ class AppInputDecorations {
     );
   }
 
+    static InputDecoration dropdownNoLabel({
+    IconData? icon,
+    Widget? suffix,
+  }) {
+    return InputDecoration(
+      labelStyle: const TextStyle(color: AppColors.primaryText, fontSize: 14),
+      hintStyle: const TextStyle(color: AppColors.secondaryText, fontSize: 14),
+      isDense: true,
+      errorStyle: const TextStyle(color: AppColors.error),
+      border: OutlineInputBorder(borderRadius: Dimens.borderRadius),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: Dimens.borderRadius,
+        borderSide: const BorderSide(color: AppColors.borderColor),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: Dimens.borderRadius,
+        borderSide: BorderSide(color: AppColors.borderColor),
+      ),
+      errorBorder: const OutlineInputBorder(
+        borderRadius: Dimens.borderRadius,
+        borderSide: BorderSide(color: AppColors.error),
+      ),
+      focusedErrorBorder: const OutlineInputBorder(
+        borderRadius: Dimens.borderRadius,
+        borderSide: BorderSide(color: AppColors.error),
+      ),
+    );
+  }
+
   static InputDecoration password({
     required String label,
     required bool isVisible,

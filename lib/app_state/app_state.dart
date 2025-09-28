@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:repsys/domain/models/catalogo_filtro_model.dart';
 import 'package:repsys/domain/models/despesa.dart';
 import 'package:repsys/domain/models/register_data_model.dart';
 import 'package:repsys/domain/models/user_empresa_models.dart';
@@ -12,7 +13,7 @@ class AppState extends ChangeNotifier {
 
   XFile? _profilePic;
   int pageViewIndex = 0;
-  int? menuIndex;
+  int menuIndex = 0;
   RegisterDataModel? get registerData => _registerData;
 
   XFile? get profilePic => _profilePic;
@@ -25,6 +26,35 @@ class AppState extends ChangeNotifier {
   EmpresaModel? get empresa => _empresa;
 
   bool get isLoggedIn => _usuario != null;
+
+  CatalogoFiltroModel? _catalogoFiltro;
+
+  CatalogoFiltroModel? get catalogoFiltro => _catalogoFiltro;
+
+  Future<void> updateCatalogoFiltro({
+    Object? busca = CatalogoFiltroModel.kUnset,
+    Object? tipo = CatalogoFiltroModel.kUnset,
+    Object? marca = CatalogoFiltroModel.kUnset,
+    bool replaceAll = false, // se true, zera os não passados
+  }) async {
+    final current = _catalogoFiltro ?? const CatalogoFiltroModel();
+
+    _catalogoFiltro = replaceAll
+        ? CatalogoFiltroModel(
+            busca: identical(busca, CatalogoFiltroModel.kUnset)
+                ? null
+                : busca as String?,
+            tipo: identical(tipo, CatalogoFiltroModel.kUnset)
+                ? null
+                : tipo as String?,
+            marca: identical(marca, CatalogoFiltroModel.kUnset)
+                ? null
+                : marca as String?,
+          )
+        : current.copyWith(busca: busca, tipo: tipo, marca: marca);
+
+    notifyListeners();
+  }
 
   /// Salva e atualiza estado
   Future<void> salvarUsuarioEmpresa({

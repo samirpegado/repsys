@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:repsys/app_state/app_state.dart';
+import 'package:repsys/ui/catalogo/components/fitlro_catalogo.dart';
 import 'package:repsys/ui/catalogo/components/novo_item.dart';
 import 'package:repsys/ui/catalogo/view_models/catalogo_viewmodel.dart';
+import 'package:repsys/ui/catalogo/widgets/catalogo_custom_table.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/ui/input_decorations.dart';
 
@@ -13,25 +18,46 @@ class Catalogo extends StatefulWidget {
 }
 
 class _CatalogoState extends State<Catalogo> {
-  final TextEditingController _searchController = TextEditingController();
+  final _searchController = TextEditingController();
+  Timer? _searchDebounce;
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appState = context.read<AppState>();
+    final isWide = MediaQuery.of(context).size.width >= 900;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
-          /// Header com título, filtros e botão de adicionar
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Catálogo',
-                  style: Theme.of(context).textTheme.headlineLarge),
+              Expanded(
+                child: Text('Catálogo',maxLines: 1,overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.headlineLarge),
+              ),
               Row(children: [
                 Material(
                   elevation: 2,
                   borderRadius: BorderRadius.circular(8.0),
                   child: TextButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) =>
+                                CatalogoViewModel(), // já instancia com o repo dentro
+                            child: const FitlroCatalogo(),
+                          ),
+                        );
+                      },
                       style: ButtonStyle(
                         minimumSize: WidgetStatePropertyAll(Size(0, 50)),
                         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -50,7 +76,7 @@ class _CatalogoState extends State<Catalogo> {
                         ],
                       )),
                 ),
-                SizedBox(width: 16),
+                if(isWide)...[SizedBox(width: 16),
                 Container(
                   constraints: BoxConstraints(maxWidth: 250),
                   child: TextFormField(
@@ -60,8 +86,22 @@ class _CatalogoState extends State<Catalogo> {
                       label: 'Pesquisar',
                       icon: Icons.search_rounded,
                     ),
+                    onChanged: (value) {
+                      _searchDebounce?.cancel();
+                      _searchDebounce =
+                          Timer(const Duration(milliseconds: 1000), () {
+                        if (!mounted) {
+                          return;
+                        }
+                        final txt = value.trim();
+                        context.read<AppState>().updateCatalogoFiltro(
+                              busca: txt.isEmpty ? null : txt,
+                            );
+                      });
+                    },
                   ),
-                ),
+                ),],
+                
                 SizedBox(width: 16),
                 Material(
                   elevation: 2,
@@ -101,6 +141,14 @@ class _CatalogoState extends State<Catalogo> {
               ])
             ],
           ),
+          SizedBox(height: 16),
+
+          /// datatable paginado
+          Expanded(
+            child: CatalogoCustomTable(
+              empresaId: appState.empresa?.id ?? '',
+            ),
+          )
         ],
       ),
     );

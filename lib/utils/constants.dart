@@ -38,3 +38,4 @@ final List<String> tipoCatalogo = [
 
 
 final double desktopWidth = 1024.0;
+

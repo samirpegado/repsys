@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:repsys/app_state/app_state.dart';
 import 'package:repsys/ui/catalogo/widgets/catalogo.dart';
 import 'package:repsys/ui/components/sidebar.dart';
 import 'package:repsys/ui/components/topbar.dart';
@@ -18,7 +20,7 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth >= desktopWidth;
-
+    final appState = context.watch<AppState>();
     return Scaffold(
       drawer: isDesktop ? null : const Drawer(child: Sidebar()),
       body: Row(
@@ -29,7 +31,7 @@ class _MainLayoutState extends State<MainLayout> {
               children: [
                 const Topbar(),
                 Expanded(
-                  child: Catalogo(),
+                  child: feature(appState.menuIndex),
                 ),
               ],
             ),
@@ -37,5 +39,28 @@ class _MainLayoutState extends State<MainLayout> {
         ],
       ),
     );
+  }
+}
+
+Widget feature(index) {
+  switch (index) {
+    case 0:
+      return Center(child: Text('Dashboard'));
+    case 1:
+      return Catalogo();
+    case 2:
+      return Center(child: Text('Clientes'));
+    case 3:
+      return Center(child: Text('Serviços'));
+    case 4:
+      return Center(child: Text('Vendas'));
+    case 5:
+      return Center(child: Text('Receitas'));
+    case 6:
+      return Center(child: Text('Despesas'));
+    case 7:
+      return Center(child: Text('Relatórios'));
+    default:
+      return Center(child: Text('Dashboard'));
   }
 }
