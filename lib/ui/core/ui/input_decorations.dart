@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/themes/dimens.dart';
 
@@ -102,4 +103,33 @@ class AppInputDecorations {
       ),
     );
   }
+
+  
 }
+
+class DiaMesInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var text = newValue.text.replaceAll(RegExp(r'\D'), ''); // só dígitos
+
+    if (text.length > 4) {
+      text = text.substring(0, 4); // limita em 4 dígitos
+    }
+
+    String newText = '';
+    if (text.length >= 2) {
+      newText = '${text.substring(0, 2)}/${text.substring(2)}';
+    } else {
+      newText = text;
+    }
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
+

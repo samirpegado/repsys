@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:repsys/app_state/app_state.dart';
-import 'package:repsys/data/repositories/catalogo_repository.dart';
-import 'package:repsys/ui/catalogo/view_models/catalogo_viewmodel.dart';
+import 'package:repsys/ui/clientes/view_models/clientes_viewmodel.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/ui/input_decorations.dart';
 import 'package:repsys/ui/core/ui/validators.dart';
 import 'package:repsys/utils/constants.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class FitlroCatalogo extends StatefulWidget {
-  const FitlroCatalogo({super.key});
+class ClientesFitlro extends StatefulWidget {
+  const ClientesFitlro({super.key});
 
   @override
-  State<FitlroCatalogo> createState() => _FitlroCatalogoState();
+  State<ClientesFitlro> createState() => _ClientesFitlroState();
 }
 
-class _FitlroCatalogoState extends State<FitlroCatalogo> {
+class _ClientesFitlroState extends State<ClientesFitlro> {
   String? _tipo;
   String? _marca;
   late AppState _appState;
-  final catalogoRepository = CatalogoRepository();
+  final _supabase = Supabase.instance.client;
   List<String> _marcas = [];
 
   @override
@@ -36,13 +36,31 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
     super.dispose();
   }
 
+  // ---------- Chamadas backend ----------
   Future<void> _loadMarcas() async {
-    if (_appState.empresa?.id == null) return;
-    final marcas = await catalogoRepository.listarMarcas(
-        empresaId: _appState.empresa?.id ?? '');
-    setState(() {
-      _marcas = marcas;
-    });
+    try {
+      final raw = await _supabase.rpc('catalogo_marcas', params: {
+        'p_empresa_id': _appState.empresa?.id ?? '',
+      }) as List<dynamic>;
+      final marcas = raw
+          .whereType<Map<String, dynamic>>()
+          .map((e) => (e['marca'] as String?)?.trim())
+          .where((e) => e != null && e.isNotEmpty)
+          .cast<String>()
+          .toSet()
+          .toList()
+        ..sort();
+      if (!mounted) return;
+      setState(() {
+        _marcas = marcas;
+        // se a marca atual não existir mais na lista, volta pra null
+        if (_marca != null && !_marcas.contains(_marca)) {
+          _marca = null;
+        }
+      });
+    } catch (e) {
+      // se falhar, apenas mantém a lista vazia
+    }
   }
 
   @override
@@ -119,7 +137,7 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                                 ))
                             .toList(),
                         onChanged: (value) => setState(() {
-                          _marca = value;
+                          _marca = value;                          
                         }),
                         style: TextStyle(
                           height: 1.6,
@@ -148,12 +166,9 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                       borderRadius: BorderRadius.circular(8.0),
                       child: TextButton(
                         onPressed: () {
-                          _appState.updateCatalogoFiltro(
-                              marca: null,
-                              tipo: null,
-                              busca: null,
-                              replaceAll: true);
-                          Navigator.of(context).pop();
+                           _appState.updateCatalogoFiltro(
+                              marca: null, tipo: null, busca: null,replaceAll: true);
+                              Navigator.of(context).pop();
                         },
                         style: ButtonStyle(
                           minimumSize:
@@ -174,7 +189,7 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Consumer<CatalogoViewModel>(
+                    Consumer<ClientesViewmodel>(
                       builder: (_, vm, __) => Material(
                         elevation: 2,
                         borderRadius: BorderRadius.circular(8.0),
@@ -182,9 +197,9 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                           onPressed: vm.isSaving
                               ? null
                               : () async {
-                                  _appState.updateCatalogoFiltro(
-                                      marca: _marca, tipo: _tipo);
-                                  Navigator.of(context).pop();
+                                _appState.updateCatalogoFiltro(
+                              marca: _marca, tipo: _tipo);
+                              Navigator.of(context).pop();
                                 },
                           style: ButtonStyle(
                             minimumSize:

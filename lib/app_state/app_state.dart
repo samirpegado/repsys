@@ -107,6 +107,7 @@ class AppState extends ChangeNotifier {
   Future<void> carregar() async {
     final prefs = await SharedPreferences.getInstance();
     // carrega o email e senha do shared preferences
+    final getMenuIndex = prefs.getInt('menuIndex');
     final getSavedEmail = prefs.getString('savedEmail');
     final getSavedPassword = prefs.getString('savedPassword');
 
@@ -119,6 +120,10 @@ class AppState extends ChangeNotifier {
       savedPassword = getSavedPassword;
     }
 
+    if(getMenuIndex != null){
+      menuIndex = getMenuIndex;
+    }
+
     notifyListeners();
   }
 
@@ -129,7 +134,9 @@ class AppState extends ChangeNotifier {
   }
 
   /// atualizar index do PageView
-  void setMenuIndex(int i) {
+  void setMenuIndex(int i) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('menuIndex', i);    
     menuIndex = i;
     notifyListeners();
   }

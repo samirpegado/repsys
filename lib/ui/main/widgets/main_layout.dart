@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:repsys/app_state/app_state.dart';
 import 'package:repsys/ui/catalogo/widgets/catalogo.dart';
+import 'package:repsys/ui/clientes/widgets/clientes.dart';
 import 'package:repsys/ui/components/sidebar.dart';
 import 'package:repsys/ui/components/topbar.dart';
 import 'package:repsys/ui/main/view_models/main_layout_viewmodel.dart';
@@ -49,7 +50,7 @@ Widget feature(index) {
     case 1:
       return Catalogo();
     case 2:
-      return Center(child: Text('Clientes'));
+      return Clientes();
     case 3:
       return Center(child: Text('Serviços'));
     case 4:

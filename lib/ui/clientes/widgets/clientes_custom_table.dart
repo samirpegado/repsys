@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import 'package:repsys/app_state/app_state.dart';
 import 'package:repsys/data/repositories/catalogo_repository.dart';
 import 'package:repsys/domain/models/catalogo_filtro_model.dart';
@@ -11,19 +10,19 @@ import 'package:repsys/domain/models/catalogo_model.dart';
 import 'package:repsys/domain/models/paginacao_model.dart';
 import 'package:repsys/domain/models/catalogo_page_model.dart';
 import 'package:repsys/ui/catalogo/components/editar_item.dart';
-import 'package:repsys/ui/catalogo/view_models/catalogo_viewmodel.dart';
+import 'package:repsys/ui/clientes/view_models/clientes_viewmodel.dart';
 
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/ui/input_decorations.dart';
 
-class CatalogoCustomTable extends StatefulWidget {
+class ClientesCustomTable extends StatefulWidget {
   final String empresaId;
   final int initialLimit;
 
   /// Você pode injetar o repo (para testes) ou deixar nulo que cria sozinho.
   final CatalogoRepository? repository;
 
-  const CatalogoCustomTable({
+  const ClientesCustomTable({
     super.key,
     required this.empresaId,
     this.initialLimit = 20,
@@ -31,10 +30,10 @@ class CatalogoCustomTable extends StatefulWidget {
   });
 
   @override
-  State<CatalogoCustomTable> createState() => _CatalogoCustomTableState();
+  State<ClientesCustomTable> createState() => _ClientesCustomTableState();
 }
 
-class _CatalogoCustomTableState extends State<CatalogoCustomTable> {
+class _ClientesCustomTableState extends State<ClientesCustomTable> {
   late final CatalogoRepository _repo;
 
   // filtros que vêm do AppState.catalogoFiltro
@@ -119,7 +118,7 @@ class _CatalogoCustomTableState extends State<CatalogoCustomTable> {
     await showDialog(
       context: context,
       builder: (_) => ChangeNotifierProvider(
-        create: (_) => CatalogoViewModel(), // já instancia com o repo dentro
+        create: (_) => ClientesViewmodel(), // já instancia com o repo dentro
         child: EditarItem(
           item: item,
         ),

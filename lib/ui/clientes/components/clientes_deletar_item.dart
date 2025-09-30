@@ -1,48 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:repsys/app_state/app_state.dart';
-import 'package:repsys/data/repositories/catalogo_repository.dart';
-import 'package:repsys/ui/catalogo/view_models/catalogo_viewmodel.dart';
+import 'package:repsys/domain/models/catalogo_model.dart';
+import 'package:repsys/ui/clientes/view_models/clientes_viewmodel.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
-import 'package:repsys/ui/core/ui/input_decorations.dart';
-import 'package:repsys/ui/core/ui/validators.dart';
-import 'package:repsys/utils/constants.dart';
 
-class FitlroCatalogo extends StatefulWidget {
-  const FitlroCatalogo({super.key});
+class ClientesDeletarItem extends StatefulWidget {
+  const ClientesDeletarItem({super.key, required this.item});
+  final CatalogoModel item;
 
   @override
-  State<FitlroCatalogo> createState() => _FitlroCatalogoState();
+  State<ClientesDeletarItem> createState() => _ClientesDeletarItemState();
 }
 
-class _FitlroCatalogoState extends State<FitlroCatalogo> {
-  String? _tipo;
-  String? _marca;
-  late AppState _appState;
-  final catalogoRepository = CatalogoRepository();
-  List<String> _marcas = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _appState = context.read<AppState>();
-    _loadMarcas();
-    _tipo = _appState.catalogoFiltro?.tipo;
-    _marca = _appState.catalogoFiltro?.marca;
-  }
-
+class _ClientesDeletarItemState extends State<ClientesDeletarItem> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  Future<void> _loadMarcas() async {
-    if (_appState.empresa?.id == null) return;
-    final marcas = await catalogoRepository.listarMarcas(
-        empresaId: _appState.empresa?.id ?? '');
-    setState(() {
-      _marcas = marcas;
-    });
   }
 
   @override
@@ -63,7 +36,7 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Filtros',
+                      'Atenção!',
                       style: TextStyle(
                         color: AppColors.primaryText,
                         fontSize: 20,
@@ -81,59 +54,22 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                 Divider(height: 1, color: AppColors.borderColor),
 
                 const SizedBox(height: 16),
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        validator: AppValidators.nome(),
-                        value: _tipo,
-                        items: tipoCatalogo
-                            .map((item) => DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                ))
-                            .toList(),
-                        onChanged: (value) => setState(() => _tipo = value),
-                        style: TextStyle(
-                          height: 1.6,
-                          color: AppColors.primaryText,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        decoration: AppInputDecorations.normal(
-                          label: 'Tipo',
-                          icon: Icons.category,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        validator: AppValidators.nome(),
-                        menuMaxHeight: 300,
-                        value: _marca,
-                        items: _marcas
-                            .map((item) => DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                ))
-                            .toList(),
-                        onChanged: (value) => setState(() {
-                          _marca = value;
-                        }),
-                        style: TextStyle(
-                          height: 1.6,
-                          color: AppColors.primaryText,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        decoration: AppInputDecorations.normal(
-                          label: 'Marca',
-                          icon: Icons.branding_watermark,
-                        ),
-                      ),
-                    ],
-                  ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Tem certeza que deseja excluir o cliente abaixo?',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      widget.item.nome,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16),
+                    Text('Essa ação não poderá ser desfeita!'),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 Divider(height: 1, color: AppColors.borderColor),
@@ -148,11 +84,6 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                       borderRadius: BorderRadius.circular(8.0),
                       child: TextButton(
                         onPressed: () {
-                          _appState.updateCatalogoFiltro(
-                              marca: null,
-                              tipo: null,
-                              busca: null,
-                              replaceAll: true);
                           Navigator.of(context).pop();
                         },
                         style: ButtonStyle(
@@ -167,14 +98,14 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text('Limpar',
+                          child: Text('Cancelar',
                               style: TextStyle(
                                   color: AppColors.primaryText, fontSize: 14)),
                         ),
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Consumer<CatalogoViewModel>(
+                    Consumer<ClientesViewmodel>(
                       builder: (_, vm, __) => Material(
                         elevation: 2,
                         borderRadius: BorderRadius.circular(8.0),
@@ -182,15 +113,34 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                           onPressed: vm.isSaving
                               ? null
                               : () async {
-                                  _appState.updateCatalogoFiltro(
-                                      marca: _marca, tipo: _tipo);
-                                  Navigator.of(context).pop();
+                                  final erro = await vm.deletar(
+                                      itemId: widget.item.id,
+                                      empresaId: widget.item.empresaId ?? '');
+
+                                  if (!mounted) return;
+
+                                  if (erro == null) {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: AppColors.error,
+                                        content:
+                                            Text('Item deletado com sucesso!'),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(erro)),
+                                    );
+                                  }
                                 },
                           style: ButtonStyle(
                             minimumSize:
                                 const WidgetStatePropertyAll(Size(0, 50)),
                             backgroundColor:
-                                WidgetStatePropertyAll(AppColors.primary),
+                                WidgetStatePropertyAll(AppColors.error),
                             shape:
                                 WidgetStateProperty.all<RoundedRectangleBorder>(
                               RoundedRectangleBorder(
@@ -209,7 +159,7 @@ class _FitlroCatalogoState extends State<FitlroCatalogo> {
                                       color: AppColors.secondary,
                                     ),
                                   )
-                                : Text('Aplicar',
+                                : Text('Excluir',
                                     style: TextStyle(
                                         color: AppColors.secondary,
                                         fontSize: 14)),
