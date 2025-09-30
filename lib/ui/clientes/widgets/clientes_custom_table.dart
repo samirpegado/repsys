@@ -1,14 +1,13 @@
 // lib/ui/catalogo/widgets/catalogo_custom_table.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:repsys/app_state/app_state.dart';
-import 'package:repsys/data/repositories/catalogo_repository.dart';
-import 'package:repsys/domain/models/catalogo_filtro_model.dart';
-import 'package:repsys/domain/models/catalogo_model.dart';
+import 'package:repsys/data/repositories/clientes_repository.dart';
+import 'package:repsys/domain/models/clientes_filtro_model.dart';
+import 'package:repsys/domain/models/clientes_model.dart';
+import 'package:repsys/domain/models/clientes_page_model.dart';
 import 'package:repsys/domain/models/paginacao_model.dart';
-import 'package:repsys/domain/models/catalogo_page_model.dart';
 import 'package:repsys/ui/catalogo/components/editar_item.dart';
 import 'package:repsys/ui/clientes/view_models/clientes_viewmodel.dart';
 
@@ -20,7 +19,7 @@ class ClientesCustomTable extends StatefulWidget {
   final int initialLimit;
 
   /// Você pode injetar o repo (para testes) ou deixar nulo que cria sozinho.
-  final CatalogoRepository? repository;
+  final ClientesRepository? repository;
 
   const ClientesCustomTable({
     super.key,
@@ -34,34 +33,34 @@ class ClientesCustomTable extends StatefulWidget {
 }
 
 class _ClientesCustomTableState extends State<ClientesCustomTable> {
-  late final CatalogoRepository _repo;
+  late final ClientesRepository _repo;
 
   // filtros que vêm do AppState.catalogoFiltro
   String? _tipo;
-  String? _marca;
+  String? _comoConheceu;
   String? _busca;
 
   int _limit = 20;
   int _pagina = 1;
 
   late AppState _appState;
-  CatalogoFiltroModel? _lastFiltro;
+  ClientesFiltroModel? _lastFiltro;
 
   // Future atual (para o FutureBuilder)
-  Future<CatalogoPageModel>? _future;
+  Future<ClientesPageModel>? _future;
 
   @override
   void initState() {
     super.initState();
-    _repo = widget.repository ?? CatalogoRepository();
+    _repo = widget.repository ?? ClientesRepository();
 
     // AppState + listener
     _appState = context.read<AppState>();
-    _lastFiltro = _appState.catalogoFiltro;
+    _lastFiltro = _appState.clientesFiltro;
 
     _limit = widget.initialLimit;
     _tipo = _lastFiltro?.tipo;
-    _marca = _lastFiltro?.marca;
+    _comoConheceu = _lastFiltro?.comoConheceu;
     _busca = _lastFiltro?.busca;
 
     _appState.addListener(_onAppStateChanged);
@@ -72,7 +71,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
   void _onAppStateChanged() {
     final f = _appState.catalogoFiltro;
     final mudouTipo = f?.tipo != _tipo;
-    final mudouMarca = f?.marca != _marca;
+    final mudouMarca = f?.marca != _comoConheceu;
     final mudouBusca = f?.busca != _busca;
     if (!mudouTipo && !mudouMarca && !mudouBusca) return;
 
@@ -80,7 +79,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
       if (!mounted) return;
       setState(() {
         _tipo = f?.tipo;
-        _marca = f?.marca;
+        _comoConheceu = f?.marca;
         _busca = f?.busca;
         _pagina = 1;
       });
@@ -94,12 +93,12 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
     super.dispose();
   }
 
-  Future<CatalogoPageModel> _fetchPage() {
-    return _repo.buscarCatalogoPage(
+  Future<ClientesPageModel> _fetchPage() {
+    return _repo.buscarClientesPage(
       empresaId: widget.empresaId,
       busca: _busca,
       tipo: _tipo,
-      marca: _marca,
+      comoConheceu: _comoConheceu,
       limit: _limit,
       pagina: _pagina,
     );
@@ -113,7 +112,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
       _future = next;
     });
   }
-
+/*
   Future<void> _editaritem(CatalogoModel item) async {
     await showDialog(
       context: context,
@@ -126,12 +125,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
     );
     _reload();
   }
-
-  String _fmtBRL(num? v) {
-    if (v == null) return '-';
-    return NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(v);
-  }
-
+*/
   Widget _headerCell(String label) => Text(
         label,
         style: const TextStyle(
@@ -158,7 +152,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width >= 900;
 
-    return FutureBuilder<CatalogoPageModel>(
+    return FutureBuilder<ClientesPageModel>(
       future: _future,
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
@@ -173,7 +167,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
         final page = snap.data;
         if (page == null) return const SizedBox.shrink();
 
-        final List<CatalogoModel> itens = page.itens;
+        final List<ClientesModel> itens = page.itens;
         final PaginacaoModel pag = page.paginacao;
 
         final int paginaAtual = pag.paginaAtual ?? _pagina;
@@ -192,19 +186,13 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(flex: 2, child: _headerCell('Nome')),
+                    Expanded(child: _headerCell('Nome')),
                     const SizedBox(width: 8),
-                    Expanded(flex: 3, child: _headerCell('Descrição')),
+                    Expanded(child: _headerCell('E-mail')),
                     const SizedBox(width: 8),
-                    Expanded(flex: 2, child: _headerCell('Tipo')),
+                    Expanded(child: _headerCell('CPF/CNPJ')),
                     const SizedBox(width: 8),
-                    Expanded(flex: 3, child: _headerCell('Código')),
-                    const SizedBox(width: 8),
-                    Expanded(flex: 2, child: _headerCell('Marca')),
-                    const SizedBox(width: 8),
-                    Expanded(flex: 1, child: _headerCell('Qtd')),
-                    const SizedBox(width: 8),
-                    Expanded(flex: 2, child: _headerCell('Valor de venda')),
+                    Expanded(child: _headerCell('Telefone')),
                   ],
                 ),
               ),
@@ -223,7 +211,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                         if (isWide) {
                           // layout em colunas (tela larga)
                           return InkWell(
-                            onTap: () => _editaritem(e),
+                            onTap: () {},
                             child: Container(
                               height: 72,
                               decoration: const BoxDecoration(
@@ -237,29 +225,14 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Expanded(flex: 2, child: _dataCell(e.nome)),
+                                  Expanded(child: _dataCell(e.nome ?? '-')),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: _dataCell(e.email ?? '-')),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                      flex: 3,
-                                      child: _dataCell(e.descricao ?? '-')),
+                                      child: _dataCell(e.documento ?? '-')),
                                   const SizedBox(width: 8),
-                                  Expanded(flex: 2, child: _dataCell(e.tipo)),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 3,
-                                      child: _dataCell(e.codigo ?? '-')),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 2,
-                                      child: _dataCell(e.marca ?? '-')),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 1,
-                                      child: _dataCell('${e.quantidade ?? 0}')),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 2,
-                                      child: _dataCell(_fmtBRL(e.valorVenda))),
+                                  Expanded(child: _dataCell(e.telefone ?? '-')),
                                 ],
                               ),
                             ),
@@ -267,7 +240,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                         } else {
                           // layout "card" (mobile)
                           return InkWell(
-                            onTap: () => _editaritem(e),
+                            onTap: () {},
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               padding: const EdgeInsets.all(16),
@@ -280,32 +253,15 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _dataCell(e.nome),
+                                  _dataCell(e.nome ?? '-'),
                                   const SizedBox(height: 6),
-                                  _dataCell(e.descricao ?? '-',
+                                  _dataCell(e.email ?? '-', secondary: true),
+                                  const SizedBox(height: 6),
+                                  _dataCell(e.documento ?? '-',
                                       secondary: true),
                                   const SizedBox(height: 6),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _dataCell('Tipo: ${e.tipo}',
-                                          secondary: true),
-                                      _dataCell('Qtd: ${e.quantidade ?? 0}',
-                                          secondary: true),
-                                    ],
-                                  ),
+                                  _dataCell(e.telefone ?? '-', secondary: true),
                                   const SizedBox(height: 6),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _dataCell('Marca: ${e.marca ?? '-'}',
-                                          secondary: true),
-                                      _dataCell(_fmtBRL(e.valorVenda),
-                                          secondary: true),
-                                    ],
-                                  ),
                                 ],
                               ),
                             ),
@@ -330,31 +286,27 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // limit por página
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        child: DropdownButtonFormField<int>(
-                          value: _limit,
-                          items: const [10, 20, 50]
-                              .map((v) => DropdownMenuItem<int>(
-                                    value: v,
-                                    child: Text('$v itens',
-                                        style: TextStyle(fontSize: 12)),
-                                  ))
-                              .toList(),
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setState(() {
-                              _limit = v;
-                              _pagina = 1;
-                            });
-                            _reload();
-                          },
-                          decoration: AppInputDecorations.dropdownNoLabel(),
-                        ),
-                      ),
-                    ],
+                  IntrinsicWidth(
+                    child: DropdownButtonFormField<int>(
+                      isDense: true,
+                      initialValue: _limit,
+                      items: const [10, 20, 50]
+                          .map((v) => DropdownMenuItem<int>(
+                                value: v,
+                                child: Text('$v itens',
+                                    style: TextStyle(fontSize: 12)),
+                              ))
+                          .toList(),
+                      onChanged: (v) {
+                        if (v == null) return;
+                        setState(() {
+                          _limit = v;
+                          _pagina = 1;
+                        });
+                        _reload();
+                      },
+                      decoration: AppInputDecorations.dropdownNoLabel(),
+                    ),
                   ),
                   // paginação
                   Row(

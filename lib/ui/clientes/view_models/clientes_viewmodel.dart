@@ -32,7 +32,7 @@ class ClientesViewmodel with ChangeNotifier {
     return (t == null || t.isEmpty) ? null : t;
   }
 
-  String onlyDigits(String? v) => v == null ? '' : v.replaceAll(RegExp(r'\D'), '');
+
 
   bool isValidEmail(String v) {
     final t = v.trim();
@@ -68,15 +68,13 @@ class ClientesViewmodel with ChangeNotifier {
   // --- Saneamento ---
   final nomeT = trimOrEmpty(nome);
   final emailT = trimOrEmpty(email);
-  final telDigits = onlyDigits(telefone);
-  final docDigits = onlyDigits(documento);
-  final cepDigits = onlyDigits(endCep);
+
   final ufT = trimOrEmpty(endUf).toUpperCase();
 
   // --- Validações obrigatórias ---
   if (nomeT.isEmpty) return 'Informe o nome';
   if (emailT.isEmpty || !isValidEmail(emailT)) return 'Informe um e-mail válido';
-  if (telDigits.length < 10 || telDigits.length > 11) return 'Informe um telefone válido';
+
 
   // tipo
   final tipoNorm = (tipo.trim().toLowerCase() == 'pj') ? 'pj' : 'pf';
@@ -93,12 +91,12 @@ class ClientesViewmodel with ChangeNotifier {
       'tipo': tipoNorm, // 'pf' | 'pj'
       'nome': nomeT,
       'email': emailT,
-      'documento': emptyToNull(docDigits),
-      'telefone': telDigits, // salvo apenas dígitos
+      'documento': emptyToNull(documento),
+      'telefone': telefone, // salvo apenas dígitos
       'data_nascimento': dataNascIso, // null se não veio AAAA
       'contato_alternativo': emptyToNull(contatoAlternativo),
       'como_conheceu': emptyToNull(comoConheceu),
-      'end_cep': emptyToNull(cepDigits),
+      'end_cep': emptyToNull(endCep),
       'end_rua': emptyToNull(endRua),
       'end_cidade': emptyToNull(endCidade),
       'end_uf': emptyToNull(ufT.isEmpty ? null : ufT),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:repsys/domain/models/catalogo_filtro_model.dart';
+import 'package:repsys/domain/models/clientes_filtro_model.dart';
 import 'package:repsys/domain/models/despesa.dart';
 import 'package:repsys/domain/models/register_data_model.dart';
 import 'package:repsys/domain/models/user_empresa_models.dart';
@@ -52,6 +53,36 @@ class AppState extends ChangeNotifier {
                 : marca as String?,
           )
         : current.copyWith(busca: busca, tipo: tipo, marca: marca);
+
+    notifyListeners();
+  }
+
+  ClientesFiltroModel? _clientesFiltro;
+
+  ClientesFiltroModel? get clientesFiltro => _clientesFiltro;
+
+  Future<void> updateClientesFiltro({
+    Object? busca = ClientesFiltroModel.kUnset,
+    Object? tipo = ClientesFiltroModel.kUnset,
+    Object? comoConheceu = ClientesFiltroModel.kUnset,
+    bool replaceAll = false, // se true, zera os não passados
+  }) async {
+    final current = _clientesFiltro ?? const ClientesFiltroModel();
+
+    _clientesFiltro = replaceAll
+        ? ClientesFiltroModel(
+            busca: identical(busca, ClientesFiltroModel.kUnset)
+                ? null
+                : busca as String?,
+            tipo: identical(tipo, ClientesFiltroModel.kUnset)
+                ? null
+                : tipo as String?,
+            comoConheceu: identical(comoConheceu, ClientesFiltroModel.kUnset)
+                ? null
+                : comoConheceu as String?,
+          )
+        : current.copyWith(
+            busca: busca, tipo: tipo, comoConheceu: comoConheceu);
 
     notifyListeners();
   }
@@ -120,7 +151,7 @@ class AppState extends ChangeNotifier {
       savedPassword = getSavedPassword;
     }
 
-    if(getMenuIndex != null){
+    if (getMenuIndex != null) {
       menuIndex = getMenuIndex;
     }
 
@@ -136,7 +167,7 @@ class AppState extends ChangeNotifier {
   /// atualizar index do PageView
   void setMenuIndex(int i) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('menuIndex', i);    
+    await prefs.setInt('menuIndex', i);
     menuIndex = i;
     notifyListeners();
   }
@@ -211,3 +242,4 @@ class AppState extends ChangeNotifier {
     _registerData = null;
   }
 }
+

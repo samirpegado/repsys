@@ -331,31 +331,27 @@ class _CatalogoCustomTableState extends State<CatalogoCustomTable> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // limit por página
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        child: DropdownButtonFormField<int>(
-                          value: _limit,
-                          items: const [10, 20, 50]
-                              .map((v) => DropdownMenuItem<int>(
-                                    value: v,
-                                    child: Text('$v itens',
-                                        style: TextStyle(fontSize: 12)),
-                                  ))
-                              .toList(),
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setState(() {
-                              _limit = v;
-                              _pagina = 1;
-                            });
-                            _reload();
-                          },
-                          decoration: AppInputDecorations.dropdownNoLabel(),
-                        ),
-                      ),
-                    ],
+                  IntrinsicWidth(
+                    child: DropdownButtonFormField<int>(
+                      isDense: true,
+                      initialValue: _limit,
+                      items: const [10, 20, 50]
+                          .map((v) => DropdownMenuItem<int>(
+                                value: v,
+                                child: Text('$v itens',
+                                    style: TextStyle(fontSize: 12)),
+                              ))
+                          .toList(),
+                      onChanged: (v) {
+                        if (v == null) return;
+                        setState(() {
+                          _limit = v;
+                          _pagina = 1;
+                        });
+                        _reload();
+                      },
+                      decoration: AppInputDecorations.dropdownNoLabel(),
+                    ),
                   ),
                   // paginação
                   Row(

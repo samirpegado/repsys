@@ -1,5 +1,5 @@
 // lib/data/catalogo_repository.dart
-import 'package:repsys/domain/models/catalogo_page_model.dart';
+import 'package:repsys/domain/models/clientes_page_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ClientesRepository {
@@ -25,25 +25,25 @@ class ClientesRepository {
   }
 
   /// Busca paginada via RPC `buscar_catalogo`, já convertendo para modelos.
-  Future<CatalogoPageModel> buscarCatalogoPage({
+  Future<ClientesPageModel> buscarClientesPage({
     required String empresaId,
     String? busca,
     String? tipo,
-    String? marca,
+    String? comoConheceu,
     int limit = 20,
     int pagina = 1,
   }) async {
-    final resp = await _supabase.rpc('buscar_catalogo', params: {
+    final resp = await _supabase.rpc('buscar_clientes', params: {
       'p_empresa_id': empresaId,
       'p_busca': _nullIfEmpty(busca),
       'f_tipo': _nullIfEmpty(tipo),
-      'f_marca': _nullIfEmpty(marca),
+      'f_como_conheceu': _nullIfEmpty(comoConheceu),
       'p_limit': limit,
       'p_pagina': pagina,
     });
 
     // Usa o factory que une as duas partes (itens + paginação)
-    return CatalogoPageModel.fromRpc(resp);
+    return ClientesPageModel.fromRpc(resp);
   }
 
   // Helper
