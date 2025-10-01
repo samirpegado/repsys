@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:repsys/domain/models/catalogo_model.dart';
+import 'package:repsys/domain/models/clientes_model.dart';
 import 'package:repsys/ui/clientes/view_models/clientes_viewmodel.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 
 class ClientesDeletarItem extends StatefulWidget {
   const ClientesDeletarItem({super.key, required this.item});
-  final CatalogoModel item;
+  final ClientesModel item;
 
   @override
   State<ClientesDeletarItem> createState() => _ClientesDeletarItemState();
@@ -63,7 +63,7 @@ class _ClientesDeletarItemState extends State<ClientesDeletarItem> {
                     ),
                     SizedBox(height: 16),
                     Text(
-                      widget.item.nome,
+                      widget.item.nome ?? '',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),

@@ -93,7 +93,7 @@ class _ClientesState extends State<Clientes> {
                           return;
                         }
                         final txt = value.trim();
-                        context.read<AppState>().updateCatalogoFiltro(
+                        context.read<AppState>().updateClientesFiltro(
                               busca: txt.isEmpty ? null : txt,
                             );
                       });

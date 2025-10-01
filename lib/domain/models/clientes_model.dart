@@ -1,5 +1,5 @@
 class ClientesModel {
-  final int id;
+  final String id;
   final String? empresaId;
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -45,7 +45,7 @@ class ClientesModel {
 
   factory ClientesModel.fromJson(Map<String, dynamic> json) {
     return ClientesModel(
-      id: (json['id'] as num).toInt(),
+      id: json['id'] as String,
       empresaId: json['empresa_id'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] != null

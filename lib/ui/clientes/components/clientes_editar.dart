@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:repsys/app_state/app_state.dart';
 import 'package:repsys/data/repositories/endereco_repository.dart';
+import 'package:repsys/domain/models/clientes_model.dart';
+import 'package:repsys/ui/clientes/components/clientes_deletar_item.dart';
 import 'package:repsys/ui/clientes/view_models/clientes_viewmodel.dart';
 import 'package:repsys/ui/core/themes/colors.dart';
 import 'package:repsys/ui/core/ui/input_decorations.dart';
@@ -28,14 +30,15 @@ class DocumentoInputFormatter extends TextInputFormatter {
   }
 }
 
-class ClientesNovoItem extends StatefulWidget {
-  const ClientesNovoItem({super.key});
+class ClientesEditar extends StatefulWidget {
+  const ClientesEditar({super.key, required this.item});
+  final ClientesModel item;
 
   @override
-  State<ClientesNovoItem> createState() => _ClientesNovoItemState();
+  State<ClientesEditar> createState() => _ClientesEditarState();
 }
 
-class _ClientesNovoItemState extends State<ClientesNovoItem> {
+class _ClientesEditarState extends State<ClientesEditar> {
   final _formKey = GlobalKey<FormState>();
 
   // Campos
@@ -155,7 +158,9 @@ class _ClientesNovoItemState extends State<ClientesNovoItem> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           // Tipo PF/PJ
-                          SizedBox(height: 4,),
+                          SizedBox(
+                            height: 4,
+                          ),
                           Row(
                             children: [
                               Expanded(
@@ -425,109 +430,141 @@ class _ClientesNovoItemState extends State<ClientesNovoItem> {
                 /// Ações
                 const SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Material(
-                      elevation: 2,
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        style: ButtonStyle(
-                          minimumSize:
-                              const WidgetStatePropertyAll(Size(0, 50)),
-                          shape:
-                              WidgetStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                    IconButton(
+                      icon: Icon(
+                        Icons.delete,
+                        color: AppColors.secondaryText,
+                      ),
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) =>
+                                ClientesViewmodel(), // já instancia com o repo dentro
+                            child: ClientesDeletarItem(
+                              item: widget.item,
                             ),
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text('Cancelar',
-                              style: TextStyle(
-                                  color: AppColors.primaryText, fontSize: 14)),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                    const SizedBox(width: 16),
-                    Consumer<ClientesViewmodel>(
-                      builder: (_, vm, __) => Material(
-                        elevation: 2,
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: TextButton(
-                          onPressed: vm.isSaving
-                              ? null
-                              : () async {
-                                  if (!_formKey.currentState!.validate()) {
-                                    return;
-                                  }
-
-                                  final erro = await vm.inserirClientes(
-                                    empresaId: appState.empresa!.id,
-                                    tipo: _tipo,
-                                    nome: _nomeController.text.trim(),
-                                    email: _emailController.text.trim(),
-                                    documento: _documentoController.text.trim(),
-                                    telefone: _telefoneController.text.trim(),
-                                    dataNascimento: ajustarDataAniversario(
-                                      _dataNascimentoController.text,
-                                    ),
-                                    contatoAlternativo:
-                                        _contatoAltController.text.trim(),
-                                    comoConheceu: _comoConheceu,
-                                    endCep: _cepController.text.trim(),
-                                    endRua: _ruaController.text.trim(),
-                                    endCidade: _cidadeController.text.trim(),
-                                    endUf: _ufController.text.trim(),
-                                    endBairro: _bairroController.text.trim(),
-                                    endNumero: _numeroController.text.trim(),
-                                    endComplemento:
-                                        _complementoController.text.trim(),
-                                  );
-
-                                  if (!mounted) return;
-
-                                  if (erro == null) {
-                                    Navigator.of(context).pop();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Cliente cadastrado com sucesso!')),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(erro)),
-                                    );
-                                  }
-                                },
-                          style: ButtonStyle(
-                            minimumSize:
-                                const WidgetStatePropertyAll(Size(0, 50)),
-                            backgroundColor:
-                                WidgetStatePropertyAll(AppColors.primary),
-                            shape:
-                                WidgetStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Material(
+                          elevation: 2,
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            style: ButtonStyle(
+                              minimumSize:
+                                  const WidgetStatePropertyAll(Size(0, 50)),
+                              shape: WidgetStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text('Cancelar',
+                                  style: TextStyle(
+                                      color: AppColors.primaryText,
+                                      fontSize: 14)),
                             ),
                           ),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: vm.isSaving
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                        color: AppColors.secondary))
-                                : Text('Salvar',
-                                    style: TextStyle(
-                                        color: AppColors.secondary,
-                                        fontSize: 14)),
+                        ),
+                        const SizedBox(width: 16),
+                        Consumer<ClientesViewmodel>(
+                          builder: (_, vm, __) => Material(
+                            elevation: 2,
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: TextButton(
+                              onPressed: vm.isSaving
+                                  ? null
+                                  : () async {
+                                      if (!_formKey.currentState!.validate()) {
+                                        return;
+                                      }
+
+                                      final erro = await vm.inserirClientes(
+                                        empresaId: appState.empresa!.id,
+                                        tipo: _tipo,
+                                        nome: _nomeController.text.trim(),
+                                        email: _emailController.text.trim(),
+                                        documento:
+                                            _documentoController.text.trim(),
+                                        telefone:
+                                            _telefoneController.text.trim(),
+                                        dataNascimento: ajustarDataAniversario(
+                                          _dataNascimentoController.text,
+                                        ),
+                                        contatoAlternativo:
+                                            _contatoAltController.text.trim(),
+                                        comoConheceu: _comoConheceu,
+                                        endCep: _cepController.text.trim(),
+                                        endRua: _ruaController.text.trim(),
+                                        endCidade:
+                                            _cidadeController.text.trim(),
+                                        endUf: _ufController.text.trim(),
+                                        endBairro:
+                                            _bairroController.text.trim(),
+                                        endNumero:
+                                            _numeroController.text.trim(),
+                                        endComplemento:
+                                            _complementoController.text.trim(),
+                                      );
+
+                                      if (!mounted) return;
+
+                                      if (erro == null) {
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  'Cliente cadastrado com sucesso!')),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(content: Text(erro)),
+                                        );
+                                      }
+                                    },
+                              style: ButtonStyle(
+                                minimumSize:
+                                    const WidgetStatePropertyAll(Size(0, 50)),
+                                backgroundColor:
+                                    WidgetStatePropertyAll(AppColors.primary),
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                ),
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: vm.isSaving
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                            color: AppColors.secondary))
+                                    : Text('Salvar',
+                                        style: TextStyle(
+                                            color: AppColors.secondary,
+                                            fontSize: 14)),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),

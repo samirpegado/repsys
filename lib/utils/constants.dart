@@ -36,6 +36,14 @@ final List<String> tipoCatalogo = [
   'Acessório',
 ];
 
+  // Lista padrão para "Como conheceu" (ajuste conforme sua necessidade)
+ const comoConheceuOpcoes = <String>[
+    'Redes sociais',
+    'Indicação de amigo',
+    'Pesquisa Google',
+    'Anúncio',
+    'Outro',
+  ];
 
 final double desktopWidth = 1024.0;
 

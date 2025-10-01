@@ -8,7 +8,7 @@ import 'package:repsys/domain/models/clientes_filtro_model.dart';
 import 'package:repsys/domain/models/clientes_model.dart';
 import 'package:repsys/domain/models/clientes_page_model.dart';
 import 'package:repsys/domain/models/paginacao_model.dart';
-import 'package:repsys/ui/catalogo/components/editar_item.dart';
+import 'package:repsys/ui/clientes/components/clientes_editar.dart';
 import 'package:repsys/ui/clientes/view_models/clientes_viewmodel.dart';
 
 import 'package:repsys/ui/core/themes/colors.dart';
@@ -69,9 +69,9 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
   }
 
   void _onAppStateChanged() {
-    final f = _appState.catalogoFiltro;
+    final f = _appState.clientesFiltro;
     final mudouTipo = f?.tipo != _tipo;
-    final mudouMarca = f?.marca != _comoConheceu;
+    final mudouMarca = f?.comoConheceu != _comoConheceu;
     final mudouBusca = f?.busca != _busca;
     if (!mudouTipo && !mudouMarca && !mudouBusca) return;
 
@@ -79,7 +79,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
       if (!mounted) return;
       setState(() {
         _tipo = f?.tipo;
-        _comoConheceu = f?.marca;
+        _comoConheceu = f?.comoConheceu;
         _busca = f?.busca;
         _pagina = 1;
       });
@@ -112,20 +112,20 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
       _future = next;
     });
   }
-/*
-  Future<void> _editaritem(CatalogoModel item) async {
+
+  Future<void> _editaritem(ClientesModel item) async {
     await showDialog(
       context: context,
       builder: (_) => ChangeNotifierProvider(
         create: (_) => ClientesViewmodel(), // já instancia com o repo dentro
-        child: EditarItem(
+        child: ClientesEditar(
           item: item,
         ),
       ),
     );
     _reload();
   }
-*/
+
   Widget _headerCell(String label) => Text(
         label,
         style: const TextStyle(
@@ -211,7 +211,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                         if (isWide) {
                           // layout em colunas (tela larga)
                           return InkWell(
-                            onTap: () {},
+                            onTap: () => _editaritem(e),
                             child: Container(
                               height: 72,
                               decoration: const BoxDecoration(
@@ -240,7 +240,7 @@ class _ClientesCustomTableState extends State<ClientesCustomTable> {
                         } else {
                           // layout "card" (mobile)
                           return InkWell(
-                            onTap: () {},
+                            onTap:  () => _editaritem(e),
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               padding: const EdgeInsets.all(16),
