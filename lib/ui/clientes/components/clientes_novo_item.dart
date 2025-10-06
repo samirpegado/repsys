@@ -101,12 +101,6 @@ class _ClientesNovoItemState extends State<ClientesNovoItem> {
     } finally {}
   }
 
-  String? ajustarDataAniversario(String? data) {
-    if (data == null || data.isEmpty) return null;
-
-    return '$data/1990';
-  }
-
   @override
   Widget build(BuildContext context) {
     final appState = context.read<AppState>();
@@ -155,7 +149,9 @@ class _ClientesNovoItemState extends State<ClientesNovoItem> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           // Tipo PF/PJ
-                          SizedBox(height: 4,),
+                          SizedBox(
+                            height: 4,
+                          ),
                           Row(
                             children: [
                               Expanded(
@@ -247,9 +243,9 @@ class _ClientesNovoItemState extends State<ClientesNovoItem> {
                                 child: TextFormField(
                                   controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
-                                  validator: AppValidators.email(),
+                                  validator: AppValidators.emailOpcional(),
                                   decoration: AppInputDecorations.normal(
-                                    label: 'E-mail *',
+                                    label: 'E-mail',
                                     icon: Icons.alternate_email,
                                   ),
                                 ),
@@ -281,10 +277,11 @@ class _ClientesNovoItemState extends State<ClientesNovoItem> {
                               Expanded(
                                 child: TextFormField(
                                   controller: _dataNascimentoController,
+                                  validator: AppValidators.dataOpcional(label: 'Data de aniversário'),
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
-                                    DiaMesInputFormatter(),
+                                    DataInputFormatter(),
                                   ],
                                   decoration: AppInputDecorations.normal(
                                     label: 'Aniversário',
@@ -470,9 +467,8 @@ class _ClientesNovoItemState extends State<ClientesNovoItem> {
                                     email: _emailController.text.trim(),
                                     documento: _documentoController.text.trim(),
                                     telefone: _telefoneController.text.trim(),
-                                    dataNascimento: ajustarDataAniversario(
-                                      _dataNascimentoController.text,
-                                    ),
+                                    dataNascimento:
+                                        _dataNascimentoController.text,
                                     contatoAlternativo:
                                         _contatoAltController.text.trim(),
                                     comoConheceu: _comoConheceu,

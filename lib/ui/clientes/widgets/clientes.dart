@@ -39,7 +39,9 @@ class _ClientesState extends State<Clientes> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text('Clientes',maxLines: 1,overflow: TextOverflow.ellipsis,
+                child: Text('Clientes',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineLarge),
               ),
               Row(children: [
@@ -75,32 +77,33 @@ class _ClientesState extends State<Clientes> {
                         ],
                       )),
                 ),
-                if(isWide)...[SizedBox(width: 16),
-                Container(
-                  constraints: BoxConstraints(maxWidth: 250),
-                  child: TextFormField(
-                    controller: _searchController,
-                    textCapitalization: TextCapitalization.words,
-                    decoration: AppInputDecorations.normal(
-                      label: 'Pesquisar',
-                      icon: Icons.search_rounded,
+                if (isWide) ...[
+                  SizedBox(width: 16),
+                  Container(
+                    constraints: BoxConstraints(maxWidth: 250),
+                    child: TextFormField(
+                      controller: _searchController,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: AppInputDecorations.normal(
+                        label: 'Pesquisar',
+                        icon: Icons.search_rounded,
+                      ),
+                      onChanged: (value) {
+                        _searchDebounce?.cancel();
+                        _searchDebounce =
+                            Timer(const Duration(milliseconds: 1000), () {
+                          if (!mounted) {
+                            return;
+                          }
+                          final txt = value.trim();
+                          context.read<AppState>().updateClientesFiltro(
+                                busca: txt.isEmpty ? null : txt,
+                              );
+                        });
+                      },
                     ),
-                    onChanged: (value) {
-                      _searchDebounce?.cancel();
-                      _searchDebounce =
-                          Timer(const Duration(milliseconds: 1000), () {
-                        if (!mounted) {
-                          return;
-                        }
-                        final txt = value.trim();
-                        context.read<AppState>().updateClientesFiltro(
-                              busca: txt.isEmpty ? null : txt,
-                            );
-                      });
-                    },
                   ),
-                ),],
-                
+                ],
                 SizedBox(width: 16),
                 Material(
                   elevation: 2,

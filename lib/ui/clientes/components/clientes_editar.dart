@@ -63,6 +63,35 @@ class _ClientesEditarState extends State<ClientesEditar> {
   final _endRepo = EnderecoRepository();
 
   @override
+  void initState() {
+    super.initState();
+    // Inicializar campos com dados do cliente existente
+    _tipo = widget.item.tipo ?? 'pf';
+    _nomeController.text = widget.item.nome ?? '';
+    _emailController.text = widget.item.email ?? '';
+    _documentoController.text = widget.item.documento ?? '';
+    _telefoneController.text = widget.item.telefone ?? '';
+    
+    // Formatar data de nascimento para DD/MM/YYYY
+    if (widget.item.dataNascimento != null) {
+      final date = widget.item.dataNascimento!;
+      _dataNascimentoController.text = '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    }
+    
+    _contatoAltController.text = widget.item.contatoAlternativo ?? '';
+    _comoConheceu = widget.item.comoConheceu;
+    
+    // Endereço
+    _cepController.text = widget.item.endCep ?? '';
+    _ruaController.text = widget.item.endRua ?? '';
+    _cidadeController.text = widget.item.endCidade ?? '';
+    _ufController.text = widget.item.endUf ?? '';
+    _bairroController.text = widget.item.endBairro ?? '';
+    _numeroController.text = widget.item.endNumero ?? '';
+    _complementoController.text = widget.item.endComplemento ?? '';
+  }
+
+  @override
   void dispose() {
     _nomeController.dispose();
     _emailController.dispose();
@@ -104,11 +133,6 @@ class _ClientesEditarState extends State<ClientesEditar> {
     } finally {}
   }
 
-  String? ajustarDataAniversario(String? data) {
-    if (data == null || data.isEmpty) return null;
-
-    return '$data/1990';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +154,7 @@ class _ClientesEditarState extends State<ClientesEditar> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Novo cliente',
+                      'Editar cliente',
                       style: TextStyle(
                         color: AppColors.primaryText,
                         fontSize: 20,
@@ -252,9 +276,9 @@ class _ClientesEditarState extends State<ClientesEditar> {
                                 child: TextFormField(
                                   controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
-                                  validator: AppValidators.email(),
+                                  validator: AppValidators.emailOpcional(),
                                   decoration: AppInputDecorations.normal(
-                                    label: 'E-mail *',
+                                    label: 'E-mail',
                                     icon: Icons.alternate_email,
                                   ),
                                 ),
@@ -286,10 +310,11 @@ class _ClientesEditarState extends State<ClientesEditar> {
                               Expanded(
                                 child: TextFormField(
                                   controller: _dataNascimentoController,
+                                  validator: AppValidators.dataOpcional(label: 'Data de aniversário'),
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
-                                    DiaMesInputFormatter(),
+                                    DataInputFormatter(),
                                   ],
                                   decoration: AppInputDecorations.normal(
                                     label: 'Aniversário',
@@ -491,7 +516,8 @@ class _ClientesEditarState extends State<ClientesEditar> {
                                         return;
                                       }
 
-                                      final erro = await vm.inserirClientes(
+                                      final erro = await vm.editarClientes(
+                                        itemId: widget.item.id,
                                         empresaId: appState.empresa!.id,
                                         tipo: _tipo,
                                         nome: _nomeController.text.trim(),
@@ -500,9 +526,7 @@ class _ClientesEditarState extends State<ClientesEditar> {
                                             _documentoController.text.trim(),
                                         telefone:
                                             _telefoneController.text.trim(),
-                                        dataNascimento: ajustarDataAniversario(
-                                          _dataNascimentoController.text,
-                                        ),
+                                        dataNascimento: _dataNascimentoController.text.trim(),
                                         contatoAlternativo:
                                             _contatoAltController.text.trim(),
                                         comoConheceu: _comoConheceu,
@@ -527,7 +551,7 @@ class _ClientesEditarState extends State<ClientesEditar> {
                                             .showSnackBar(
                                           const SnackBar(
                                               content: Text(
-                                                  'Cliente cadastrado com sucesso!')),
+                                                  'Cliente atualizado com sucesso!')),
                                         );
                                       } else {
                                         ScaffoldMessenger.of(context)
