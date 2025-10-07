@@ -1,0 +1,15 @@
+tabela vendas
+id uuid gen auto
+empresa_id
+cliente_id
+created_at
+updated_at
+created_by
+numero int
+tipo text
+pagamento_status
+pagamento_forma
+pagamento_valor
+pagamento_data
+orcamento_custo
+orcamento_valor
